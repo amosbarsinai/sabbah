@@ -16,13 +16,7 @@ enum class OperatorType {
     GT,
     LT,
     GTE,
-    LTE,
-    AND,
-    OR,
-    NOT,
-    NOR,
-    XOR,
-    XNOR
+    LTE
 };
 
 class OperatorToken : public Token {

@@ -15,8 +15,6 @@ enum class TokenType {
     KW_DEF,
     KW_RETURN,
 
-    KW_EXTERN,
-
     // Identifiers and literals
     IDENTIFIER,
     NUMBER,

@@ -55,8 +55,6 @@ std::vector<Token::Token> Token::Tokenizer::tokenize() {
                 tokens.push_back(Token(TokenType::KW_DEF, lexeme, token_line, token_column));
             } else if (lexeme == "return") {
                 tokens.push_back(Token(TokenType::KW_RETURN, lexeme, token_line, token_column));
-            } else if (lexeme == "extern") {
-                tokens.push_back(Token(TokenType::KW_EXTERN, lexeme, token_line, token_column));
             } else {
                 tokens.push_back(Token(TokenType::IDENTIFIER, lexeme, token_line, token_column));
             }
@@ -92,16 +90,48 @@ std::vector<Token::Token> Token::Tokenizer::tokenize() {
             tokens.push_back(OperatorToken(OperatorType::MOD, "%", token_line, token_column));
         } else if (current == '>') {
             consume();
-            tokens.push_back(OperatorToken(OperatorType::GT, ">", token_line, token_column));
+            if (peek() == '=') {
+                consume();
+                tokens.push_back(OperatorToken(OperatorType::GTE, ">=", token_line, token_column));
+            } else {
+                tokens.push_back(OperatorToken(OperatorType::GT, ">", token_line, token_column));
+            }
         } else if (current == '<') {
             consume();
-            tokens.push_back(OperatorToken(OperatorType::LT, "<", token_line, token_column));
+            if (peek() == '=') {
+                consume();
+                tokens.push_back(OperatorToken(OperatorType::LTE, "<=", token_line, token_column));
+            } else {
+                tokens.push_back(OperatorToken(OperatorType::LT, "<", token_line, token_column));
+            }
+        } else if (current == ':') {
+            consume();
+            tokens.push_back(Token(TokenType::COLON, ":", token_line, token_column));
+        } else if (current == ',') {
+            consume();
+            tokens.push_back(Token(TokenType::COMMA, ",", token_line, token_column));
         } else if (current == '\0') {
             break;
         } else {
-            // Handle unknown character
-            std::string lexeme(1, consume());
-            tokens.emplace_back(TokenType::UNKNOWN, lexeme, token_line, token_column);
+            if (current == '=') {
+                consume();
+                if (peek() == '=') {
+                    consume();
+                    tokens.push_back(OperatorToken(OperatorType::EQ, "==", token_line, token_column));
+                    continue;
+                }
+            } else if (current == '!') {
+                consume();
+                if (peek() == '=') {
+                    consume();
+                    tokens.push_back(OperatorToken(OperatorType::NEQ, "!=", token_line, token_column));
+                    continue;
+                }
+            } else {
+                // Handle unknown character
+                std::string lexeme(1, consume());
+                tokens.emplace_back(TokenType::UNKNOWN, lexeme, token_line, token_column);
+            }
         }
     }
     return tokens;
@@ -114,7 +144,6 @@ std::string& Token::Token::name() {
     static std::string tok_whitespace = "TOK_WHITESPACE";
     static std::string kw_def = "KW_DEF";
     static std::string kw_return = "KW_RETURN";
-    static std::string kw_extern = "KW_EXTERN";
     static std::string identifier = "IDENTIFIER";
     static std::string number = "NUMBER";
     static std::string operator_tok = "OPERATOR";
@@ -129,7 +158,6 @@ std::string& Token::Token::name() {
         case TokenType::TOK_WHITESPACE: return tok_whitespace;
         case TokenType::KW_DEF: return kw_def;
         case TokenType::KW_RETURN: return kw_return;
-        case TokenType::KW_EXTERN: return kw_extern;
         case TokenType::IDENTIFIER: return identifier;
         case TokenType::NUMBER: return number;
         case TokenType::OPERATOR: return operator_tok;
