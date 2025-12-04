@@ -23,6 +23,8 @@ enum class TokenType {
     OPERATOR,
 
     // Punctuation
+    NEWLINE,
+
     COLON,
     PAREN_OPEN,
     PAREN_CLOSE,
